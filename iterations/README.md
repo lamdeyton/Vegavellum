@@ -21,4 +21,20 @@
 
 | 轮次 | 主题 | 状态 | 抓到的 bug |
 |------|------|------|-----------|
-| [R1](./01-data-contract-path-consistency.md) | 数据契约 + 路径一致性 | 进行中 | B1-B5 |
+| [R1](./01-data-contract-path-consistency.md) | 数据契约 + 路径一致性 | 已完成 | B1-B5（base 双斜杠 / sources 契约 / category 引用 / slug 文件名 / pending 静默）+ E1 校验脚本命名冲突 + E2 Astro 遥测 EPERM |
+| [R2](./02-seo-completeness.md) | SEO 完整性 | 已完成 | E1 @astrojs/sitemap@3.7.3 与 Astro 4 不兼容 + E2 Astro 7 升级破坏性变更 |
+| [R3](./03-ux-completeness.md) | 用户体验完善 | 已完成 | 无新 bug（补全 404 / 统计 / 空分类 CTA / CONTRIBUTING / LICENSE） |
+| [R4](./04-final-audit.md) | 最终审计 + 6 子目标全验证 | 已完成 | N1 canonical URL 尾斜杠与 sitemap 不一致 + N2 README 未反映 R1-R3 + N3 iterations 索引未更新 |
+
+## 6 子目标深度演进
+
+| 子目标 | R1 后 | R2 后 | R3 后 | R4 后 |
+|--------|-------|-------|-------|-------|
+| 1. 数据完整性 | 深 | 深 | 深 | 深 |
+| 2. 路由正确性 | 深 | 深 | 深 | 深 |
+| 3. 可访问性 | 未涉及 | 未涉及 | 中 | 中 |
+| 4. SEO/元数据 | 未涉及 | 深 | 深 | 深 |
+| 5. 部署链路 | 深 | 深 | 深 | 深 |
+| 6. 可扩展性 | 未涉及 | 未涉及 | 深 | 深 |
+
+> 子目标 3（可访问性）当前为"中"：已含 404 页面、空状态 CTA、aria-label。继续做深需 a11y 审计（对比度、键盘导航、skip-link），不在 MVP demo 范围内，留作正式开发阶段任务。

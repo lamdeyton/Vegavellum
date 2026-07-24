@@ -12,7 +12,8 @@ const { title, description = '精选目录式 GitHub 开源项目索引', path =
 const categories = getAllCategories();
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
-const fullUrl = path ? `${siteUrl}${base}/${path}` : `${siteUrl}${base}/`;
+// 与 Astro 默认 build.format='directory' 一致：子页面 URL 带尾斜杠
+const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
 ---
 
 <!doctype html>
