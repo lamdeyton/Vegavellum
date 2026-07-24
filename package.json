@@ -9,7 +9,8 @@
     "validate": "node scripts/validate-data.mjs"
   },
   "dependencies": {
-    "astro": "^4.16.0",
+    "@astrojs/sitemap": "3.2.1",
+    "astro": "4.16.19",
     "yaml": "^2.5.0"
   }
 }

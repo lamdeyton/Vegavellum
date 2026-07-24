@@ -19,7 +19,7 @@ const projects = getProjectsByCategory(category.id);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Base title={`${category.name} · Vegavellum`} description={category.description}>
+<Base title={`${category.name} · Vegavellum`} description={category.description} path={`category/${category.id}`}>
   <section class="category-head">
     <a class="back" href={`${base}/`}>← 返回首页</a>
     <h1>

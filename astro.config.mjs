@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 // 注：如需禁用 Astro 遥测，请设置环境变量 ASTRO_TELEMETRY_DISABLED=1
@@ -6,4 +7,5 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://lamdeyton.github.io',
   base: '/Vegavellum',
+  integrations: [sitemap()],
 });

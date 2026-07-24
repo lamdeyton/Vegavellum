@@ -17,7 +17,7 @@ const repoUrl = `https://github.com/${project.repo}`;
 const sources = Array.isArray(project.sources) ? project.sources : [];
 ---
 
-<Base title={`${project.name} · Vegavellum`} description={project.description}>
+<Base title={`${project.name} · Vegavellum`} description={project.description} path={`project/${project.slug}`}>
   <article class="detail">
     <a class="back" href={`${base}/`}>← 返回首页</a>
 

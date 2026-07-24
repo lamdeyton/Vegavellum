@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lamdeyton.github.io/Vegavellum/sitemap-index.xml

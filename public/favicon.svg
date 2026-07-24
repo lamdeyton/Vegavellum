@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- 背景：深紫夜空 -->
+  <rect width="32" height="32" rx="6" fill="#14132b"/>
+  <!-- 织女星：左上四角星 -->
+  <path d="M9 5 L10 8 L13 9 L10 10 L9 13 L8 10 L5 9 L8 8 Z" fill="#ede9fe"/>
+  <!-- Vellum 卷轴：V 字形羊皮纸卷 -->
+  <path d="M8 20 L16 26 L24 20 L24 24 L16 30 L8 24 Z" fill="#5b21b6"/>
+  <path d="M8 16 L16 22 L24 16 L24 20 L16 26 L8 20 Z" fill="#a78bfa"/>
+  <!-- 卷轴顶部高光 -->
+  <path d="M8 16 L16 22 L24 16" fill="none" stroke="#ede9fe" stroke-width="0.8" stroke-linejoin="round"/>
+</svg>
