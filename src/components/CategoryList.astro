@@ -1,0 +1,90 @@
+---
+import type { Category } from '../lib/data';
+
+interface Props {
+  categories: Category[];
+  counts?: Record<string, number>;
+}
+
+const { categories, counts } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<ul class="category-list">
+  {categories.map((c) => {
+    const count = counts?.[c.id];
+    return (
+      <li>
+        <a class="cat-item" href={`${base}/category/${c.id}`}>
+          <span class="icon" aria-hidden="true">{c.icon}</span>
+          <span class="names">
+            <span class="name-cn">{c.name}</span>
+            <span class="name-en">{c.name_en}</span>
+          </span>
+          {count !== undefined && <span class="count">{count}</span>}
+        </a>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .category-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .cat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .cat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(20, 19, 43, 0.07);
+    border-color: #d2d5de;
+  }
+
+  .icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .names {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .name-cn {
+    font-weight: 600;
+  }
+
+  .name-en {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .count {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+  }
+</style>

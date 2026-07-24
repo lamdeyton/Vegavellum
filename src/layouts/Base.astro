@@ -1,0 +1,151 @@
+---
+import { getAllCategories } from '../lib/data';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = '精选目录式 GitHub 开源项目索引' } = Astro.props;
+const categories = getAllCategories();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href={`${base}/`}>Vegavellum</a>
+        <nav class="cat-nav" aria-label="分类导航">
+          {categories.map((c) => (
+            <a href={`${base}/category/${c.id}`}>{c.icon} {c.name}</a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>Vegavellum · 织星为卷，索引开源。</p>
+      </div>
+    </footer>
+
+    <style is:global>
+      :root {
+        --bg: #f7f7f9;
+        --surface: #ffffff;
+        --text: #1a1a2e;
+        --text-muted: #5a6072;
+        --border: #e4e6ec;
+        --accent: #5b21b6;
+        --accent-soft: #ede9fe;
+        --header-bg: #14132b;
+        --header-text: #f3f3f7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+      }
+
+      .site-header {
+        background: var(--header-bg);
+        color: var(--header-text);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem 1.5rem;
+        padding-top: 0.85rem;
+        padding-bottom: 0.85rem;
+      }
+
+      .brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--header-text);
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .cat-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .cat-nav a {
+        color: #c9c9e0;
+        text-decoration: none;
+        padding: 0.25rem 0.4rem;
+        border-radius: 6px;
+        transition: color 0.15s, background 0.15s;
+      }
+
+      .cat-nav a:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      main {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+        min-height: 70vh;
+      }
+
+      .site-footer {
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        padding: 1.5rem 0;
+        text-align: center;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.25;
+      }
+    </style>
+  </body>
+</html>

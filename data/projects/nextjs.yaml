@@ -1,0 +1,12 @@
+name: Next.js
+slug: nextjs
+repo: vercel/next.js
+description: The React Framework for the Web
+category: frontend-framework
+url: https://nextjs.org
+license: mit
+tags: [react, ssr, ssg, fullstack]
+language: TypeScript
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

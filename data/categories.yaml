@@ -1,0 +1,53 @@
+- id: frontend-framework
+  name: 前端框架
+  name_en: Frontend Framework
+  icon: 🎨
+  description: 构建 Web 前端应用的核心框架
+
+- id: backend-framework
+  name: 后端框架
+  name_en: Backend Framework
+  icon: ⚙️
+  description: 服务端应用开发框架
+
+- id: dev-tools
+  name: 开发工具
+  name_en: Dev Tools
+  icon: 🛠️
+  description: 提升开发效率的工具集
+
+- id: ai-ml
+  name: AI / 机器学习
+  name_en: AI / ML
+  icon: 🤖
+  description: 人工智能与机器学习相关项目
+
+- id: database
+  name: 数据库
+  name_en: Database
+  icon: 🗄️
+  description: 数据库与存储方案
+
+- id: devops
+  name: 运维 / 部署
+  name_en: DevOps
+  icon: 🚀
+  description: 运维、部署与基础设施
+
+- id: security
+  name: 安全
+  name_en: Security
+  icon: 🔒
+  description: 安全相关工具与框架
+
+- id: cli
+  name: 命令行工具
+  name_en: CLI
+  icon: ⌨️
+  description: 命令行工具与终端应用
+
+- id: libraries
+  name: 通用库
+  name_en: Libraries
+  icon: 📦
+  description: 通用编程库与工具包

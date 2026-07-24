@@ -1,0 +1,12 @@
+name: ripgrep
+slug: ripgrep
+repo: BurntSushi/ripgrep
+description: recursively search directories for a regex pattern
+category: cli
+url: https://github.com/BurntSushi/ripgrep
+license: unlicense
+tags: [search, grep, cli, rust]
+language: Rust
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

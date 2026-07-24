@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import {
+  getAllCategories,
+  getProjectsByCategory,
+} from '../../lib/data';
+
+export function getStaticPaths() {
+  const categories = getAllCategories();
+  return categories.map((c) => ({
+    params: { id: c.id },
+    props: { category: c },
+  }));
+}
+
+const { category } = Astro.props;
+const projects = getProjectsByCategory(category.id);
+const base = import.meta.env.BASE_URL;
+---
+
+<Base title={`${category.name} · Vegavellum`} description={category.description}>
+  <section class="category-head">
+    <a class="back" href={`${base}/`}>← 返回首页</a>
+    <h1>
+      <span class="icon" aria-hidden="true">{category.icon}</span>
+      {category.name}
+      <span class="name-en">{category.name_en}</span>
+    </h1>
+    <p class="desc">{category.description}</p>
+  </section>
+
+  {projects.length > 0 ? (
+    <section class="grid">
+      {projects.map((p) => <ProjectCard project={p} />)}
+    </section>
+  ) : (
+    <p class="empty">该分类暂无已收录项目。</p>
+  )}
+</Base>
+
+<style>
+  .category-head {
+    margin-bottom: 1.5rem;
+  }
+
+  .back {
+    font-size: 0.875rem;
+    text-decoration: none;
+    color: var(--text-muted);
+  }
+
+  .back:hover {
+    color: var(--accent);
+  }
+
+  .category-head h1 {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0.75rem 0 0.35rem;
+    font-size: 1.8rem;
+  }
+
+  .icon {
+    font-size: 1.6rem;
+  }
+
+  .name-en {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .empty {
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+  }
+</style>

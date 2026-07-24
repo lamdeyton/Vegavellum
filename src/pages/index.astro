@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import CategoryList from '../components/CategoryList.astro';
+import { getAllCategories, getAllProjects } from '../lib/data';
+
+const categories = getAllCategories();
+const projects = getAllProjects();
+
+const counts: Record<string, number> = {};
+for (const p of projects) {
+  counts[p.category] = (counts[p.category] ?? 0) + 1;
+}
+---
+
+<Base title="Vegavellum · 织星为卷，索引开源">
+  <section class="hero">
+    <h1>Vegavellum</h1>
+    <p class="slogan">织星为卷，索引开源。</p>
+    <p class="slogan-en">Weaving the GitHub galaxy onto one scroll.</p>
+    <p class="naming">
+      Vega — 织女星，编织云锦亦为夏夜最亮导航星；Vellum — 精制羊皮卷。
+      将散落于 GitHub 星河中的优质开源项目，精心编织誊抄于一卷珍贵典籍。
+    </p>
+  </section>
+
+  <section class="categories">
+    <h2>分类</h2>
+    <CategoryList categories={categories} counts={counts} />
+  </section>
+</Base>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 2rem 0 2.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    margin: 0 0 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .slogan {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .slogan-en {
+    margin: 0.2rem 0 1rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .naming {
+    max-width: 640px;
+    margin: 0 auto;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .categories {
+    margin-top: 1rem;
+  }
+
+  .categories h2 {
+    margin: 0 0 1rem;
+    font-size: 1.3rem;
+  }
+</style>

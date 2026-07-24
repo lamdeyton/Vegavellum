@@ -1,0 +1,121 @@
+---
+import type { Project } from '../lib/data';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const repoUrl = `https://github.com/${project.repo}`;
+---
+
+<article class="card">
+  <h3 class="card-title">
+    <a href={`${base}/project/${project.slug}`}>{project.name}</a>
+  </h3>
+  <p class="card-desc">{project.description}</p>
+  <div class="card-meta">
+    <a class="repo-link" href={repoUrl} target="_blank" rel="noopener noreferrer">
+      GitHub ↗
+    </a>
+    {project.license && <span class="badge license">{project.license}</span>}
+    {project.language && <span class="badge lang">{project.language}</span>}
+  </div>
+  {project.tags && project.tags.length > 0 && (
+    <ul class="tags">
+      {project.tags.map((t) => <li>#{t}</li>)}
+    </ul>
+  )}
+</article>
+
+<style>
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(20, 19, 43, 0.08);
+    border-color: #d2d5de;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .card-title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .card-title a:hover {
+    color: var(--accent);
+  }
+
+  .card-desc {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .repo-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .repo-link:hover {
+    text-decoration: underline;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .badge.lang {
+    background: #eef2ff;
+    color: #3730a3;
+  }
+
+  .tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .tags li {
+    background: #f1f1f6;
+    padding: 0.1rem 0.45rem;
+    border-radius: 6px;
+  }
+</style>

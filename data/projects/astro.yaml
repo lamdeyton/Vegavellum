@@ -1,0 +1,12 @@
+name: Astro
+slug: astro
+repo: withastro/astro
+description: The web framework for content-driven websites
+category: frontend-framework
+url: https://astro.build
+license: mit
+tags: [static-site-generator, mdx, islands]
+language: TypeScript
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]
