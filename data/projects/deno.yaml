@@ -4,7 +4,7 @@ repo: denoland/deno
 description: A modern runtime for JavaScript and TypeScript
 category: dev-tools
 url: https://deno.land
-license: mit
+license: MIT
 tags: [runtime, typescript, javascript]
 language: Rust
 addedAt: 2026-07-24

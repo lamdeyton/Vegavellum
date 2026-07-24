@@ -74,6 +74,11 @@ for (const { file, data: p } of projects) {
     }
   }
 
+  // addedAt 日期格式 YYYY-MM-DD（CONTRIBUTING 声明的契约）
+  if (p.addedAt && !/^\d{4}-\d{2}-\d{2}$/.test(p.addedAt)) {
+    fail(`${label}: addedAt "${p.addedAt}" 不是 YYYY-MM-DD 格式`);
+  }
+
   // B4 slug vs 文件名
   if (p.slug && p.slug !== fileBase) {
     fail(`${label}: slug "${p.slug}" 与文件名 "${fileBase}" 不一致（B4 契约：文件名即 slug）`);

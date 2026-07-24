@@ -20,7 +20,7 @@ category: dev-tools           # 必须存在于 data/categories.yaml 的 id
 
 # 可选字段
 url: https://my-project.dev   # 官网（无则省略，默认用 GitHub repo）
-license: mit                  # SPDX 标识符
+license: MIT                  # SPDX 标识符（canonical 形式，如 MIT / Apache-2.0 / Unlicense）
 tags: [cli, rust, search]     # 技术标签
 language: Rust                # 主语言
 

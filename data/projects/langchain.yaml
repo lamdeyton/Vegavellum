@@ -4,7 +4,7 @@ repo: langchain-ai/langchain
 description: Build context-aware reasoning applications
 category: ai-ml
 url: https://langchain.com
-license: mit
+license: MIT
 tags: [llm, ai, agents, rag]
 language: Python
 addedAt: 2026-07-24
