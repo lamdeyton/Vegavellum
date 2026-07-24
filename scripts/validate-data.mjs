@@ -105,6 +105,11 @@ for (const { file, data: p } of projects) {
     fail(`${label}: repo "${p.repo}" 应为 owner/repo 格式`);
   }
 
+  // url 不应与 repo URL 重复（CONTRIBUTING：无独立官网时省略 url）
+  if (p.url && p.repo && p.url === `https://github.com/${p.repo}`) {
+    warn(`${label}: url "${p.url}" 与 repo URL 重复，无独立官网时应省略 url 字段`);
+  }
+
   // B5 pending/rejected 警告
   if (p.status === 'pending') {
     warn(`${label}: status=pending，该项目不会在站点上显示，等待维护者审核`);

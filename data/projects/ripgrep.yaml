@@ -3,7 +3,6 @@ slug: ripgrep
 repo: BurntSushi/ripgrep
 description: recursively search directories for a regex pattern
 category: cli
-url: https://github.com/BurntSushi/ripgrep
 license: Unlicense
 tags: [search, grep, cli, rust]
 language: Rust
