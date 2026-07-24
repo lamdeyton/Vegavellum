@@ -52,6 +52,7 @@ const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
     <meta name="twitter:description" content={description} />
   </head>
   <body>
+    <a href="#main-content" class="skip-link">跳到主内容</a>
     <header class="site-header">
       <div class="container nav">
         <a class="brand" href={`${base}/`}>Vegavellum</a>
@@ -62,7 +63,7 @@ const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
         </nav>
       </div>
     </header>
-    <main class="container">
+    <main class="container" id="main-content">
       <slot />
     </main>
     <footer class="site-footer">
@@ -99,6 +100,24 @@ const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
         background: var(--bg);
         color: var(--text);
         line-height: 1.6;
+      }
+
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 1rem;
+        z-index: 100;
+        background: var(--accent);
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 0 0 8px 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: top 0.15s ease;
+      }
+
+      .skip-link:focus {
+        top: 0;
       }
 
       .container {
