@@ -35,7 +35,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       {projects.map((p) => <ProjectCard project={p} />)}
     </section>
   ) : (
-    <p class="empty">该分类暂无已收录项目。</p>
+    <div class="empty">
+      <p class="empty-title">该分类暂无已收录项目</p>
+      <p class="empty-hint">如果你知道优秀的开源项目，欢迎通过 PR 提名收录。</p>
+      <a class="empty-cta" href={`${base}/`}>← 浏览其他分类</a>
+    </div>
   )}
 </Base>
 
@@ -90,5 +94,29 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     border-radius: 12px;
     padding: 2.5rem;
     text-align: center;
+  }
+
+  .empty-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .empty-hint {
+    margin: 0 0 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .empty-cta {
+    display: inline-block;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .empty-cta:hover {
+    text-decoration: underline;
   }
 </style>

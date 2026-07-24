@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<Base title="404 · 页面未找到 · Vegavellum" description="您访问的页面不存在" path="404">
+  <section class="not-found">
+    <div class="big-404">404</div>
+    <h1>页面未找到</h1>
+    <p class="hint">您访问的页面不存在，可能已被移除或路径有误。</p>
+    <a class="cta" href={`${base}/`}>← 返回首页</a>
+  </section>
+</Base>
+
+<style>
+  .not-found {
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .big-404 {
+    font-size: clamp(4rem, 15vw, 7rem);
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .not-found h1 {
+    margin: 0.5rem 0 0.75rem;
+    font-size: 1.5rem;
+  }
+
+  .hint {
+    color: var(--text-muted);
+    margin: 0 0 1.5rem;
+  }
+
+  .cta {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+  }
+
+  .cta:hover {
+    opacity: 0.9;
+  }
+</style>
