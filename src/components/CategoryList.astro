@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { categories, counts } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <ul class="category-list">

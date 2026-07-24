@@ -27,7 +27,8 @@ export interface Project {
   language?: string;
   addedAt: string;
   status: 'published' | 'pending' | 'rejected';
-  sources: string[];
+  /** 收录来源，自动维护字段，贡献者无需填写 */
+  sources?: string[];
 }
 
 /** 读取并解析全部分类定义。 */
