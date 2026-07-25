@@ -28,18 +28,23 @@ nvm use
 # 安装依赖
 npm install
 
-# 本地开发
+# 本地开发（R50：自动先跑 validator，数据违例时 dev server 不启动）
 npm run dev
 
-# 数据校验（检查 YAML 契约一致性）
+# 数据校验（独立运行，检查 YAML 契约一致性）
 npm run validate
 
-# 构建生产版本（输出到 dist/）
+# 构建生产版本（R50：自动先跑 validator，与 CI 行为一致）
+# 输出到 dist/
 npm run build
 
 # 本地预览构建产物
 npm run preview
 ```
+
+> R50 起，`npm run dev` 和 `npm run build` 都会先执行 `npm run validate`，数据违例时
+> 立即失败，避免在 dev 模式或本地构建中绕过校验导致渲染异常或 XSS 风险。如需绕过
+> 校验（如调试 data.ts 渲染层防御），可直接执行 `npx astro dev` / `npx astro build`。
 
 > 注：如本地构建遇到 Astro 遥测权限错误，设置环境变量 `ASTRO_TELEMETRY_DISABLED=1` 后重试，或执行 `astro telemetry disable` 全局禁用。
 
@@ -86,7 +91,7 @@ Vegavellum/
 
 - **精选目录**：扁平分类，9 个类别覆盖主流领域
 - **静态站点**：Astro 4 构建，零 JS 默认，SEO 友好
-- **数据校验**：`npm run validate` 检查 YAML 契约（必填字段、Project/Category 全字段类型校验、status/sources 枚举、repo 格式与跨项目唯一性、addedAt 日期格式与有效性、slug 文件名一致性与 URL-friendly 格式与唯一性、category 引用、category id 唯一性与 URL-friendly 格式、license 类型与 SPDX canonical、url 格式与协议白名单（http/https only，防 `javascript:` 等 XSS 注入）与冗余、language 类型、tags/sources 数组类型与元素非空/唯一性/空白字符串校验、可选字段空值校验 url/license/language 不得为空字符串且 tags/sources 不得为空数组、未知字段拒绝防 typo、空文件与非对象 YAML 防御性检查防 validator 崩溃、free-text 字段空白字符串校验防渲染不可见内容、repo 前后空格与中间空格校验防 GitHub URL 404、categoryIds 防御性计算防 `- null` 在循环前崩溃、categories.yaml 顶层 null/非数组校验防 `?? []` 掩盖空文件导致 validator 静默通过但渲染层崩溃）
+- **数据校验**：`npm run dev` 和 `npm run build` 自动先跑 validator（R50），数据违例立即失败，避免 dev 模式或本地构建绕过校验导致渲染异常或 XSS 风险。校验内容覆盖：必填字段、Project/Category 全字段类型校验、status/sources 枚举、repo 格式与跨项目唯一性、addedAt 日期格式与有效性、slug 文件名一致性与 URL-friendly 格式与唯一性、category 引用、category id 唯一性与 URL-friendly 格式、license 类型与 SPDX canonical、url 格式与协议白名单（http/https only，防 `javascript:` 等 XSS 注入）与冗余、language 类型、tags/sources 数组类型与元素非空/唯一性/空白字符串校验、可选字段空值校验 url/license/language 不得为空字符串且 tags/sources 不得为空数组、未知字段拒绝防 typo、空文件与非对象 YAML 防御性检查防 validator 崩溃、free-text 字段空白字符串校验防渲染不可见内容、repo 前后空格与中间空格校验防 GitHub URL 404、categoryIds 防御性计算防 `- null` 在循环前崩溃、categories.yaml 顶层 null/非数组校验防 `?? []` 掩盖空文件导致 validator 静默通过但渲染层崩溃）
 - **SEO 完整**：sitemap.xml、robots.txt、OG tags + og:image 社交预览图、Twitter Card、canonical URL、noindex（404）、JSON-LD BreadcrumbList 结构化数据、SVG favicon
 - **可访问性**：WCAG 2.4.1 (A) skip-link 跳转主内容、3.1.2 (A) 英文内容 `lang="en"` 标注、2.4.7 (AA) `:focus-visible` 键盘焦点样式、2.4.4 (A) 链接 aria-label 区分用途、1.3.1 (A) stats 语义化列表、1.1.1 (A) 装饰性 emoji `aria-hidden` 标注
 - **导航体验**：project 和 category 详情页统一面包屑导航（首页 > 分类 > 当前页）

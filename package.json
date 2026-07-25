@@ -6,8 +6,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "dev": "npm run validate && astro dev",
+    "build": "npm run validate && astro build",
     "preview": "astro preview",
     "validate": "node scripts/validate-data.mjs"
   },

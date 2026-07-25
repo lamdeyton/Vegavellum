@@ -71,13 +71,17 @@ npm install
 # 顶层 null/非数组校验等）
 npm run validate
 
-# 本地预览
+# 本地预览（R50：npm run dev 会自动先跑 validator，数据违例时 dev server 不启动）
 npm run dev
 # 访问 http://localhost:4321/Vegavellum
 
-# 构建验证
+# 构建验证（R50：npm run build 同样自动先跑 validator，CI 已对齐此行为）
 ASTRO_TELEMETRY_DISABLED=1 npm run build
 ```
+
+> R50 起，`npm run dev` 和 `npm run build` 都会先执行 `npm run validate`，数据违例时
+> 立即失败，避免在 dev 模式或本地构建中绕过校验导致渲染异常或 XSS 风险。如需绕过
+> 校验（如调试 data.ts 渲染层防御），可直接执行 `npx astro dev` / `npx astro build`。
 
 ### 4. 提交 PR
 
