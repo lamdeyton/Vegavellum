@@ -14,7 +14,7 @@
 # 必填字段
 name: My Project              # 项目名称
 slug: my-project              # URL 友好的唯一标识（必须与文件名一致）
-repo: owner/repo              # GitHub 仓库，owner/repo 格式
+repo: owner/repo              # GitHub 仓库，owner/repo 格式，不可与已收录项目重复（大小写不敏感）
 description: A brief one-line description
 category: dev-tools           # 必须存在于 data/categories.yaml 的 id
 
@@ -24,9 +24,18 @@ license: MIT                  # SPDX 标识符（canonical 形式，如 MIT / Ap
 tags: [cli, rust, search]     # 技术标签
 language: Rust                # 主语言
 
+# 注意：可选字段要么省略不写，要么提供有效值。
+# 以下写法会被校验拒绝（与省略字段语义不同，视为误写）：
+#   url: ""          → 空字符串
+#   license: ""      → 空字符串
+#   language: ""     → 空字符串
+#   tags: []         → 空数组
+#   sources: []      → 空数组
+
 # 元数据（贡献者填写以下两项，其余自动维护）
-addedAt: 2026-07-24           # 收录日期（YYYY-MM-DD）
+addedAt: 2026-07-24           # 收录日期（YYYY-MM-DD，必须是有效日期，2026-02-30 等溢出日期会被拒绝）
 status: pending               # 新提名统一用 pending，维护者审核后改为 published
+sources: [community-nominated]# 收录来源，枚举：auto-discovered | community-nominated | curator-curated
 ```
 
 ### 2. 选择分类
@@ -53,7 +62,12 @@ status: pending               # 新提名统一用 pending，维护者审核后�
 # 安装依赖（首次）
 npm install
 
-# 数据校验（检查必填字段、category 引用、slug 文件名一致性等）
+# 数据校验（检查必填字段、Project/Category 全字段类型、status/sources 枚举、
+# repo 格式与跨项目唯一性、addedAt 日期格式与有效性、slug 文件名一致性与 URL-friendly
+# 格式与唯一性、category 引用、category id 唯一性与 URL-friendly 格式、license SPDX
+# canonical、url 格式与冗余、tags/sources 数组元素类型/非空/唯一性/空白字符串、
+# 可选字段空值、未知字段拒绝防 typo、空文件与非对象 YAML 防御性检查、free-text
+# 空白字符串、repo 前后与中间空格、categories.yaml 顶层 null/非数组校验等）
 npm run validate
 
 # 本地预览
@@ -88,12 +102,25 @@ ASTRO_TELEMETRY_DISABLED=1 npm run build
 | `published` | 已审核通过，在站点显示 |
 | `rejected` | 未通过审核（PR 中会说明原因） |
 
+## 收录来源说明
+
+| sources | 含义 |
+|---------|------|
+| `curator-curated` | 维护者人工策展（A 层） |
+| `community-nominated` | 社区 PR 提名（B 层，贡献者填写此项） |
+| `auto-discovered` | 机器人自动发现（C 层，未实现） |
+
 ## 开发环境
+
+> 要求 Node.js ≥ 18（推荐 20，与 CI 一致）。仓库根目录 `.nvmrc` 已锁定版本，使用 nvm/fnm 可自动切换。
 
 ```bash
 # 克隆仓库
 git clone git@github.com:lamdeyton/Vegavellum.git
 cd Vegavellum
+
+# 切换 Node 版本（如使用 nvm）
+nvm use
 
 # 安装依赖
 npm install
