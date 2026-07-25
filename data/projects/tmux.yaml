@@ -1,0 +1,11 @@
+name: tmux
+slug: tmux
+repo: tmux/tmux
+description: Terminal multiplexer
+category: cli
+license: ISC
+tags: [terminal-multiplexer, productivity, terminal]
+language: C
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

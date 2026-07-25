@@ -1,0 +1,12 @@
+name: MongoDB
+slug: mongodb
+repo: mongodb/mongo
+description: The application data platform
+category: database
+url: https://www.mongodb.com
+license: SSPL
+tags: [nosql, document, distributed]
+language: C++
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

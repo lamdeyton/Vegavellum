@@ -1,0 +1,12 @@
+name: OpenSSL
+slug: openssl
+repo: openssl/openssl
+description: Cryptography and SSL/TLS Toolkit
+category: security
+url: https://www.openssl.org
+license: Apache-2.0
+tags: [tls, cryptography, encryption]
+language: C
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

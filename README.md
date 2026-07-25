@@ -90,6 +90,7 @@ Vegavellum/
 ## 功能
 
 - **精选目录**：扁平分类，9 个类别覆盖主流领域
+- **全文搜索**：支持按项目名称、描述、标签实时搜索，URL 参数 `?q=` 可分享搜索结果
 - **静态站点**：Astro 4 构建，零 JS 默认，SEO 友好
 - **数据校验**：`npm run dev` 和 `npm run build` 自动先跑 validator（R50），数据违例立即失败，避免 dev 模式或本地构建绕过校验导致渲染异常或 XSS 风险。校验内容覆盖：必填字段、Project/Category 全字段类型校验、status/sources 枚举、repo 格式与跨项目唯一性、addedAt 日期格式与有效性、slug 文件名一致性与 URL-friendly 格式与唯一性（含空白+前后空格校验，R55，与 Category.id 同型对齐）、category 引用、category id 唯一性与 URL-friendly 格式、license 类型与 SPDX canonical、url 格式与协议白名单（http/https only，防 `javascript:` 等 XSS 注入）与冗余、language 类型、tags/sources 数组类型与元素非空/唯一性/空白字符串/前后空格校验（R54，R39/R53 同型补全，元素级前后空格校验与字段级对齐）、可选字段空值校验 url/license/language 不得为空字符串且 tags/sources 不得为空数组、未知字段拒绝防 typo、空文件与非对象 YAML 防御性检查防 validator 崩溃、free-text 字段空白字符串校验防渲染不可见内容、free-text 字段前后空格校验（R53，R37/R52 同型补全，name/description/license/language + Category 5 字段 = 9 个字段统一前后空格校验，SPDX/URL-friendly 等后续格式校验在输入有空格时跳过避免误导性错误）、repo 前后空格与中间空格校验防 GitHub URL 404、repo 空段校验防 owner/repo 为空生成无效 URL（R51）、url 空白校验（trim() 空字符串与前后空格校验，R52，R37 同型补全，防 `<a href=" https://... ">` 含空格渲染）、categoryIds 防御性计算防 `- null` 在循环前崩溃、categories.yaml 顶层 null/非数组校验防 `?? []` 掩盖空文件导致 validator 静默通过但渲染层崩溃）
 - **SEO 完整**：sitemap.xml、robots.txt、OG tags + og:image 社交预览图、Twitter Card、canonical URL、noindex（404）、JSON-LD BreadcrumbList 结构化数据、SVG favicon

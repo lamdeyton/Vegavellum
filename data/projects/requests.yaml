@@ -1,0 +1,12 @@
+name: Requests
+slug: requests
+repo: psf/requests
+description: A simple, yet elegant, HTTP library for Python
+category: libraries
+url: https://requests.readthedocs.io
+license: Apache-2.0
+tags: [python, http, api]
+language: Python
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getAllProjects, getCategoryById, getSourceLabel } from '../../lib/data';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getAllProjects, getCategoryById, getSourceLabel, getProjectsByCategory } from '../../lib/data';
 
 export function getStaticPaths() {
   const projects = getAllProjects();
@@ -16,6 +17,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
 const repoUrl = `https://github.com/${project.repo}`;
 const sources = Array.isArray(project.sources) ? project.sources : [];
+
+const relatedProjects = getProjectsByCategory(project.category)
+  .filter((p) => p.slug !== project.slug)
+  .slice(0, 3);
 
 // JSON-LD BreadcrumbList 结构化数据（SEO：帮助搜索引擎理解页面层级）
 const breadcrumbLd = {
@@ -42,9 +47,21 @@ const breadcrumbLd = {
     },
   ],
 };
+
+const softwareLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareSourceCode',
+  name: project.name,
+  description: project.description,
+  codeRepository: repoUrl,
+  ...(project.url ? { url: project.url } : {}),
+  ...(project.license ? { license: project.license } : {}),
+  ...(project.language ? { programmingLanguage: project.language } : {}),
+  ...(category ? { applicationCategory: category.name } : {}),
+};
 ---
 
-<Base title={`${project.name} · Vegavellum`} description={project.description} path={`project/${project.slug}`} jsonLd={breadcrumbLd}>
+<Base title={`${project.name} · Vegavellum`} description={project.description} path={`project/${project.slug}`} jsonLd={[breadcrumbLd, softwareLd]}>
   <article class="detail">
     <nav class="breadcrumb" aria-label="面包屑导航">
       <a href={`${base}/`}>首页</a>
@@ -59,27 +76,29 @@ const breadcrumbLd = {
     <header class="detail-head">
       <h1>{project.name}</h1>
       <p class="detail-desc">{project.description}</p>
+      <div class="detail-actions">
+        <a class="btn btn-primary" href={repoUrl} target="_blank" rel="noopener noreferrer">
+          GitHub ↗
+        </a>
+        {project.url && (
+          <a class="btn btn-secondary" href={project.url} target="_blank" rel="noopener noreferrer">
+            官网 ↗
+          </a>
+        )}
+      </div>
     </header>
 
     <dl class="info">
       <div>
-        <dt>GitHub 仓库</dt>
+        <dt>分类</dt>
         <dd>
-          <a href={repoUrl} target="_blank" rel="noopener noreferrer">
-            {project.repo} ↗
-          </a>
+          {category ? (
+            <a href={`${base}/category/${category.id}/`}>
+              <span aria-hidden="true">{category.icon}</span> {category.name}
+            </a>
+          ) : project.category}
         </dd>
       </div>
-      {project.url && (
-        <div>
-          <dt>官网</dt>
-          <dd>
-            <a href={project.url} target="_blank" rel="noopener noreferrer">
-              {project.url} ↗
-            </a>
-          </dd>
-        </div>
-      )}
       {project.license && (
         <div>
           <dt>许可证</dt>
@@ -112,12 +131,21 @@ const breadcrumbLd = {
         </ul>
       </section>
     )}
+
+    {relatedProjects.length > 0 && (
+      <section class="related-section">
+        <h2>同类项目</h2>
+        <div class="related-grid">
+          {relatedProjects.map((p) => <ProjectCard project={p} />)}
+        </div>
+      </section>
+    )}
   </article>
 </Base>
 
 <style>
   .detail {
-    max-width: 760px;
+    max-width: 860px;
   }
 
   .breadcrumb {
@@ -158,9 +186,46 @@ const breadcrumbLd = {
     font-size: 1.05rem;
   }
 
+  .detail-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: #4c1d95;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   .info {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem 1.5rem;
     margin: 0 0 1.5rem;
   }
@@ -184,6 +249,15 @@ const breadcrumbLd = {
     margin: 0;
     font-weight: 600;
     word-break: break-word;
+  }
+
+  .info a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .info a:hover {
+    color: var(--accent);
   }
 
   .badge {
@@ -215,5 +289,22 @@ const breadcrumbLd = {
     background: #f1f1f6;
     padding: 0.2rem 0.55rem;
     border-radius: 6px;
+  }
+
+  .related-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .related-section h2 {
+    font-size: 1.1rem;
+    margin: 0 0 1rem;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
   }
 </style>

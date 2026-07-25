@@ -1,0 +1,12 @@
+name: Vue
+slug: vue
+repo: vuejs/core
+description: The progressive JavaScript framework
+category: frontend-framework
+url: https://vuejs.org
+license: MIT
+tags: [mvvm, reactive, sfc]
+language: TypeScript
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

@@ -1,0 +1,12 @@
+name: Express
+slug: express
+repo: expressjs/express
+description: Fast, unopinionated, minimalist web framework for Node.js
+category: backend-framework
+url: https://expressjs.com
+license: MIT
+tags: [nodejs, middleware, rest]
+language: JavaScript
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

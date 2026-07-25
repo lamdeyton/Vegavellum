@@ -1,0 +1,12 @@
+name: Kubernetes
+slug: kubernetes
+repo: kubernetes/kubernetes
+description: Production-Grade Container Orchestration
+category: devops
+url: https://kubernetes.io
+license: Apache-2.0
+tags: [orchestration, containers, cloud-native]
+language: Go
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

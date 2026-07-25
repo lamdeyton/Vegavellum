@@ -1,0 +1,12 @@
+name: React
+slug: react
+repo: facebook/react
+description: The library for web and native user interfaces
+category: frontend-framework
+url: https://react.dev
+license: MIT
+tags: [ui-library, virtual-dom, hooks]
+language: JavaScript
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

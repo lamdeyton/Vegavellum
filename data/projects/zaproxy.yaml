@@ -1,0 +1,12 @@
+name: OWASP ZAP
+slug: zaproxy
+repo: zaproxy/zaproxy
+description: The world's most widely used web app scanner
+category: security
+url: https://www.zaproxy.org
+license: Apache-2.0
+tags: [web-security, penetration-testing, scanner]
+language: Java
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

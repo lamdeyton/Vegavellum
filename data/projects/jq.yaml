@@ -1,0 +1,12 @@
+name: jq
+slug: jq
+repo: jqlang/jq
+description: Command-line JSON processor
+category: cli
+url: https://jqlang.github.io/jq
+license: MIT
+tags: [json, parser, text-processing]
+language: C
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

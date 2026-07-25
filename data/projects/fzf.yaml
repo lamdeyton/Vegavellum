@@ -1,0 +1,11 @@
+name: fzf
+slug: fzf
+repo: junegunn/fzf
+description: A command-line fuzzy finder
+category: cli
+license: MIT
+tags: [fuzzy-search, terminal, productivity]
+language: Go
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

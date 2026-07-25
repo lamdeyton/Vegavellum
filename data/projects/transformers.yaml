@@ -1,0 +1,12 @@
+name: Hugging Face Transformers
+slug: transformers
+repo: huggingface/transformers
+description: State-of-the-art Machine Learning for Pytorch, TensorFlow, and JAX
+category: ai-ml
+url: https://huggingface.co/docs/transformers
+license: Apache-2.0
+tags: [nlp, llm, transformers]
+language: Python
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

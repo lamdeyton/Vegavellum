@@ -1,0 +1,12 @@
+name: Redis
+slug: redis
+repo: redis/redis
+description: In-memory data structure store, used as database, cache, and message broker
+category: database
+url: https://redis.io
+license: BSD-3-Clause
+tags: [key-value, cache, pubsub]
+language: C
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

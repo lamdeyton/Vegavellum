@@ -1,0 +1,12 @@
+name: Lodash
+slug: lodash
+repo: lodash/lodash
+description: A modern JavaScript utility library
+category: libraries
+url: https://lodash.com
+license: MIT
+tags: [javascript, utility, functional]
+language: JavaScript
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

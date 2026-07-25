@@ -1,0 +1,12 @@
+name: Terraform
+slug: terraform
+repo: hashicorp/terraform
+description: Infrastructure as Code tool for building and managing infrastructure
+category: devops
+url: https://www.terraform.io
+license: MPL-2.0
+tags: [iac, infrastructure, cloud]
+language: Go
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

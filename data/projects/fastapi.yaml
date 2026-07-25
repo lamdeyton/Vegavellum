@@ -1,0 +1,12 @@
+name: FastAPI
+slug: fastapi
+repo: tiangolo/fastapi
+description: Modern, fast web framework for building APIs with Python
+category: backend-framework
+url: https://fastapi.tiangolo.com
+license: MIT
+tags: [python, async, openapi]
+language: Python
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

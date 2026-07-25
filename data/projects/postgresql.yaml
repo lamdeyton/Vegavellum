@@ -1,0 +1,12 @@
+name: PostgreSQL
+slug: postgresql
+repo: postgres/postgres
+description: The Most Advanced Open Source Relational Database
+category: database
+url: https://www.postgresql.org
+license: PostgreSQL
+tags: [relational, sql, acid]
+language: C
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

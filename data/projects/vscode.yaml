@@ -1,0 +1,12 @@
+name: VS Code
+slug: vscode
+repo: microsoft/vscode
+description: Code editing. Redefined.
+category: dev-tools
+url: https://code.visualstudio.com
+license: MIT
+tags: [ide, editor, extensions]
+language: TypeScript
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]

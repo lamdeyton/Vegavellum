@@ -1,0 +1,12 @@
+name: Docker
+slug: docker
+repo: moby/moby
+description: The open-source application container engine
+category: devops
+url: https://www.docker.com
+license: Apache-2.0
+tags: [container, microservices, orchestration]
+language: Go
+addedAt: 2026-07-24
+status: published
+sources: [curator-curated]
