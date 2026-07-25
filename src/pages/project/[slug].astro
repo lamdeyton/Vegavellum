@@ -104,7 +104,7 @@ const breadcrumbLd = {
       )}
     </dl>
 
-    {project.tags && project.tags.length > 0 && (
+    {Array.isArray(project.tags) && project.tags.length > 0 && (
       <section class="tags-section">
         <h2>标签</h2>
         <ul class="tags">

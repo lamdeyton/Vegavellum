@@ -61,7 +61,7 @@ const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
     <meta name="twitter:image" content={`${siteUrl}${base}/og-image.png`} />
 
     {jsonLd && (
-      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
     )}
   </head>
   <body>

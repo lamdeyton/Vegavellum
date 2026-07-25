@@ -35,7 +35,7 @@ const repoUrl = `https://github.com/${project.repo}`;
     {project.license && <span class="badge license">{project.license}</span>}
     {project.language && <span class="badge lang">{project.language}</span>}
   </div>
-  {project.tags && project.tags.length > 0 && (
+  {Array.isArray(project.tags) && project.tags.length > 0 && (
     <ul class="tags">
       {project.tags.map((t) => <li>#{t}</li>)}
     </ul>
