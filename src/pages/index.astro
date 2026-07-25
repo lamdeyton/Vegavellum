@@ -16,31 +16,47 @@ const stats = {
   categories: categories.length,
   categoriesWithProjects: Object.values(counts).filter((n) => n > 0).length,
 };
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+
+// JSON-LD WebSite 结构化数据（SEO：声明站点身份，帮助搜索引擎识别品牌名）
+// R23 Connection 修复：补齐 R18/R20 未覆盖的首页层
+// 不加 SearchAction：站点当前无搜索功能，声明了无法履行会被降权
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Vegavellum',
+  alternateName: '织星卷',
+  url: `${siteUrl}${base}/`,
+  description: '精选目录式 GitHub 开源项目索引',
+  inLanguage: 'zh-CN',
+};
 ---
 
-<Base title="Vegavellum · 织星为卷，索引开源">
+<Base title="Vegavellum · 织星为卷，索引开源" jsonLd={websiteLd}>
   <section class="hero">
     <h1>Vegavellum</h1>
     <p class="slogan">织星为卷，索引开源。</p>
-    <p class="slogan-en">Weaving the GitHub galaxy onto one scroll.</p>
+    <p class="slogan-en" lang="en">Weaving the GitHub galaxy onto one scroll.</p>
     <p class="naming">
       Vega — 织女星，编织云锦亦为夏夜最亮导航星；Vellum — 精制羊皮卷。
       将散落于 GitHub 星河中的优质开源项目，精心编织誊抄于一卷珍贵典籍。
     </p>
-    <div class="stats">
-      <div class="stat">
+    <ul class="stats">
+      <li class="stat">
         <span class="num">{stats.projects}</span>
         <span class="label">已收录项目</span>
-      </div>
-      <div class="stat">
+      </li>
+      <li class="stat">
         <span class="num">{stats.categoriesWithProjects}</span>
         <span class="label">已覆盖分类</span>
-      </div>
-      <div class="stat">
+      </li>
+      <li class="stat">
         <span class="num">{stats.categories}</span>
         <span class="label">总分类数</span>
-      </div>
-    </div>
+      </li>
+    </ul>
   </section>
 
   <section class="categories">
@@ -83,6 +99,9 @@ const stats = {
   }
 
   .stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     gap: 2.5rem;

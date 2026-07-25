@@ -19,7 +19,12 @@ Vegavellum 是一个精选目录式（curated directory）的 GitHub 开源项�
 
 ## 快速开始
 
+> 要求 Node.js ≥ 18（推荐 20，与 CI 一致）。仓库根目录 `.nvmrc` 已锁定版本，使用 nvm/fnm 可自动切换。
+
 ```bash
+# 切换 Node 版本（如使用 nvm）
+nvm use
+
 # 安装依赖
 npm install
 
@@ -81,8 +86,10 @@ Vegavellum/
 
 - **精选目录**：扁平分类，9 个类别覆盖主流领域
 - **静态站点**：Astro 4 构建，零 JS 默认，SEO 友好
-- **数据校验**：`npm run validate` 检查 YAML 契约（category 引用、slug 文件名一致性、必填字段、枚举值）
-- **SEO 完整**：sitemap.xml、robots.txt、OG tags、Twitter Card、canonical URL、SVG favicon
+- **数据校验**：`npm run validate` 检查 YAML 契约（必填字段、Project/Category 全字段类型校验、status/sources 枚举、repo 格式与跨项目唯一性、addedAt 日期格式与有效性、slug 文件名一致性与 URL-friendly 格式与唯一性、category 引用、category id 唯一性与 URL-friendly 格式、license 类型与 SPDX canonical、url 格式与冗余、language 类型、tags/sources 数组类型与元素非空/唯一性/空白字符串校验、可选字段空值校验 url/license/language 不得为空字符串且 tags/sources 不得为空数组、未知字段拒绝防 typo、空文件与非对象 YAML 防御性检查防 validator 崩溃、free-text 字段空白字符串校验防渲染不可见内容、repo 前后空格与中间空格校验防 GitHub URL 404、categoryIds 防御性计算防 `- null` 在循环前崩溃、categories.yaml 顶层 null/非数组校验防 `?? []` 掩盖空文件导致 validator 静默通过但渲染层崩溃）
+- **SEO 完整**：sitemap.xml、robots.txt、OG tags + og:image 社交预览图、Twitter Card、canonical URL、noindex（404）、JSON-LD BreadcrumbList 结构化数据、SVG favicon
+- **可访问性**：WCAG 2.4.1 (A) skip-link 跳转主内容、3.1.2 (A) 英文内容 `lang="en"` 标注、2.4.7 (AA) `:focus-visible` 键盘焦点样式、2.4.4 (A) 链接 aria-label 区分用途、1.3.1 (A) stats 语义化列表、1.1.1 (A) 装饰性 emoji `aria-hidden` 标注
+- **导航体验**：project 和 category 详情页统一面包屑导航（首页 > 分类 > 当前页）
 - **CI/CD**：GitHub Actions 自动校验 + 构建 + 部署到 GitHub Pages
 - **贡献友好**：CONTRIBUTING.md 详述数据格式与提交流程
 

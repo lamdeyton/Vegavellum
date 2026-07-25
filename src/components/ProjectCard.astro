@@ -12,13 +12,26 @@ const repoUrl = `https://github.com/${project.repo}`;
 
 <article class="card">
   <h3 class="card-title">
-    <a href={`${base}/project/${project.slug}`}>{project.name}</a>
+    <a href={`${base}/project/${project.slug}/`}>{project.name}</a>
   </h3>
   <p class="card-desc">{project.description}</p>
   <div class="card-meta">
-    <a class="repo-link" href={repoUrl} target="_blank" rel="noopener noreferrer">
+    <a class="repo-link"
+       href={repoUrl}
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label={`${project.name} GitHub 仓库`}>
       GitHub ↗
     </a>
+    {project.url && (
+      <a class="url-link"
+         href={project.url}
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label={`${project.name} 官网`}>
+        官网 ↗
+      </a>
+    )}
     {project.license && <span class="badge license">{project.license}</span>}
     {project.language && <span class="badge lang">{project.language}</span>}
   </div>
@@ -84,6 +97,17 @@ const repoUrl = `https://github.com/${project.repo}`;
   }
 
   .repo-link:hover {
+    text-decoration: underline;
+  }
+
+  .url-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .url-link:hover {
+    color: var(--accent);
     text-decoration: underline;
   }
 

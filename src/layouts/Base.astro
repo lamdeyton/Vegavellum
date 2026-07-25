@@ -8,6 +8,8 @@ interface Props {
   path?: string;
   /** 设为 true 时输出 noindex 并跳过 canonical（用于 404 等不应被索引的页面） */
   noindex?: boolean;
+  /** JSON-LD 结构化数据对象（如 BreadcrumbList），注入到 head 中 */
+  jsonLd?: object | object[];
 }
 
 const {
@@ -15,6 +17,7 @@ const {
   description = '精选目录式 GitHub 开源项目索引',
   path = '',
   noindex = false,
+  jsonLd,
 } = Astro.props;
 const categories = getAllCategories();
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -45,11 +48,21 @@ const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
     {!noindex && <meta property="og:url" content={fullUrl} />}
     <meta property="og:site_name" content="Vegavellum" />
     <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content={`${siteUrl}${base}/og-image.png`} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Vegavellum · 织星为卷，索引开源" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${siteUrl}${base}/og-image.png`} />
+
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
   </head>
   <body>
     <a href="#main-content" class="skip-link">跳到主内容</a>
@@ -58,7 +71,7 @@ const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
         <a class="brand" href={`${base}/`}>Vegavellum</a>
         <nav class="cat-nav" aria-label="分类导航">
           {categories.map((c) => (
-            <a href={`${base}/category/${c.id}`}>{c.icon} {c.name}</a>
+            <a href={`${base}/category/${c.id}/`}><span aria-hidden="true">{c.icon}</span> {c.name}</a>
           ))}
         </nav>
       </div>
@@ -190,6 +203,19 @@ const fullUrl = path ? `${siteUrl}${base}/${path}/` : `${siteUrl}${base}/`;
 
       a {
         color: var(--accent);
+      }
+
+      /* WCAG 2.4.7 Focus Visible (AA)：键盘聚焦时显示焦点环 */
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      /* skip-link 的 focus 样式保持原有滑动效果，覆盖全局 focus-visible */
+      .skip-link:focus {
+        outline: none;
       }
 
       h1,

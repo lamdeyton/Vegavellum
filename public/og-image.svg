@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- 背景：深紫夜空 -->
+  <rect width="1200" height="630" fill="#14132b"/>
+
+  <!-- 星点装饰 -->
+  <circle cx="120" cy="80" r="1.5" fill="#ede9fe" opacity="0.6"/>
+  <circle cx="1080" cy="120" r="1" fill="#ede9fe" opacity="0.5"/>
+  <circle cx="950" cy="200" r="1.5" fill="#ede9fe" opacity="0.7"/>
+  <circle cx="200" cy="500" r="1" fill="#ede9fe" opacity="0.4"/>
+  <circle cx="1100" cy="450" r="1.5" fill="#ede9fe" opacity="0.6"/>
+  <circle cx="80" cy="350" r="1" fill="#ede9fe" opacity="0.5"/>
+
+  <!-- 织女星：左上四角星（放大版） -->
+  <path d="M180 100 L200 160 L260 180 L200 200 L180 260 L160 200 L100 180 L160 160 Z" fill="#ede9fe"/>
+
+  <!-- Vellum 卷轴：居中 V 字形羊皮纸卷（放大版） -->
+  <g transform="translate(480 280)">
+    <path d="M0 80 L120 160 L240 80 L240 120 L120 200 L0 120 Z" fill="#5b21b6"/>
+    <path d="M0 40 L120 120 L240 40 L240 80 L120 160 L0 80 Z" fill="#a78bfa"/>
+    <path d="M0 40 L120 120 L240 40" fill="none" stroke="#ede9fe" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+
+  <!-- 品牌名 -->
+  <text x="600" y="440" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="72" font-weight="700" fill="#f3f3f7" letter-spacing="0.02em">Vegavellum</text>
+
+  <!-- 中文 slogan -->
+  <text x="600" y="500" text-anchor="middle" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="32" font-weight="600" fill="#a78bfa">织星为卷，索引开源。</text>
+
+  <!-- 英文 slogan -->
+  <text x="600" y="550" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" font-style="italic" fill="#c9c9e0">Weaving the GitHub galaxy onto one scroll.</text>
+</svg>

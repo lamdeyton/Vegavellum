@@ -15,11 +15,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const count = counts?.[c.id];
     return (
       <li>
-        <a class="cat-item" href={`${base}/category/${c.id}`}>
+        <a class="cat-item" href={`${base}/category/${c.id}/`}>
           <span class="icon" aria-hidden="true">{c.icon}</span>
           <span class="names">
             <span class="name-cn">{c.name}</span>
-            <span class="name-en">{c.name_en}</span>
+            <span class="name-en" lang="en">{c.name_en}</span>
           </span>
           {count !== undefined && <span class="count">{count}</span>}
         </a>
