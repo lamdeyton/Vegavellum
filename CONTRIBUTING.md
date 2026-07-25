@@ -67,8 +67,8 @@ npm install
 # 格式与唯一性、category 引用、category id 唯一性与 URL-friendly 格式、license SPDX
 # canonical、url 格式与协议白名单（防 javascript: 等 XSS 注入）与冗余、tags/sources
 # 数组元素类型/非空/唯一性/空白字符串、可选字段空值、未知字段拒绝防 typo、空文件与
-# 非对象 YAML 防御性检查、free-text 空白字符串、repo 前后与中间空格、categories.yaml
-# 顶层 null/非数组校验等）
+# 非对象 YAML 防御性检查、free-text 空白字符串、repo 前后与中间空格、repo 空段校验（防
+# owner/repo 为空生成无效 URL）、categories.yaml 顶层 null/非数组校验等）
 npm run validate
 
 # 本地预览（R50：npm run dev 会自动先跑 validator，数据违例时 dev server 不启动）

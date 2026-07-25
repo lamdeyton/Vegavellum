@@ -8,7 +8,7 @@
 //   必填字段：name/slug/repo/description/category/addedAt/status
 //   枚举值：status ∈ {published, pending, rejected}
 //          sources ∈ {auto-discovered, community-nominated, curator-curated}
-//   repo 格式：owner/repo（单个斜杠）
+//   repo 格式：owner/repo（单个斜杠，owner/repo 段均非空，防 "foo/" / "/foo" / "/" 空段）
 //   addedAt 格式：YYYY-MM-DD
 //   addedAt 日期有效性：必须是真实存在的日期（2026-02-30 / 2026-13-01 / 2026-00-01 等溢出日期不通过）
 //   repo 跨项目唯一性：同一 GitHub 仓库不允许被重复收录（大小写不敏感，因 GitHub owner/repo 解析不区分大小写）
@@ -317,10 +317,19 @@ for (const { file, data: p } of projects) {
     fail(`${label}: status "${p.status}" 不在枚举 {published, pending, rejected} 内`);
   }
 
-  // repo 格式
+  // repo 格式校验
   // 防御性 typeof（CRITICAL）：数组没有 .split() 方法，会导致 TypeError 崩溃
-  if (typeof p.repo === 'string' && p.repo && (p.repo.split('/').length !== 2 || p.repo.includes('://'))) {
-    fail(`${label}: repo "${p.repo}" 应为 owner/repo 格式`);
+  if (typeof p.repo === 'string' && p.repo) {
+    const parts = p.repo.split('/');
+    if (parts.length !== 2 || p.repo.includes('://')) {
+      fail(`${label}: repo "${p.repo}" 应为 owner/repo 格式`);
+    } else if (!parts[0] || !parts[1]) {
+      // R51：空段校验（R37/R40 同型补全，Horizontal gap 修复）
+      // `repo: "withastro/"` / `repo: "/astro"` / `repo: "/"` 通过 split('/') 长度校验（2 段），
+      // 但 owner 或 repo 段为空字符串，生成无效 GitHub URL（https://github.com/withastro/ → 404）
+      // 同型对齐 R37（前后空格）/ R40（中间空格）：repo 格式校验链补全
+      fail(`${label}: repo "${p.repo}" 的 owner 或 repo 段为空，应为 "owner/repo" 格式（如 withastro/astro）`);
+    }
   }
 
   // R37：repo 前后空格校验
