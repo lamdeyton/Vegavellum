@@ -2,6 +2,22 @@
 
 感谢你对 Vegavellum 的关注！这是一个社区驱动的开源项目索引，欢迎通过 PR 提名优质项目。
 
+## 自动发现（C 层）
+
+项目也可以通过机器人自动发现。运行以下命令，按 stars 阈值和活跃度从 GitHub 抓取候选项目：
+
+```bash
+npm run discover
+```
+
+候选项目会生成到 `data/candidates/` 目录，`status: pending`，人工审核后移动到 `data/projects/` 并改为 `status: published`。
+
+可调参数（环境变量）：
+- `MIN_STARS`：最低 stars 数，默认 1000
+- `MIN_PUSHED_DAYS`：最近 push 天数，默认 180
+- `PER_TOPIC`：每个 topic 抓取数量，默认 10
+- `GITHUB_TOKEN`：GitHub Token，提高 API 限额
+
 ## 如何提名一个项目
 
 ### 1. 创建项目数据文件
