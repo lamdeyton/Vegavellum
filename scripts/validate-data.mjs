@@ -19,6 +19,7 @@
 //   sources 元素：非空字符串 + 唯一 + 类型校验（同 tags 同型对齐，防误导性"不在枚举内"错误掩盖类型错误）
 //   tags/sources 元素空白字符串：`["   "]` 报错（同 R37 字段级 trim() 空白校验同型对齐，防渲染 `#   ` 空白标签 + 防误导性"不在枚举内"）
 //   url 格式：必须是合法 URL（带协议，如 https://example.com）
+//   url 协议白名单：只允许 http/https（R48，防 `javascript:` / `data:` / `vbscript:` XSS 注入到 <a href>）
 //   url/license/language 类型：必须是字符串（Project interface 契约）
 //   可选字段空值：url/license/language 不得为空字符串，tags/sources 不得为空数组（要么不写字段，要么写有效值）
 //   Project 必填字段类型：name/slug/repo/description/category/addedAt/status 必须是字符串
@@ -363,6 +364,14 @@ for (const { file, data: p } of projects) {
   // url 格式校验（Project interface 契约：url?: string，CONTRIBUTING 示例带 https://）
   // 贡献者误写 `url: my-project.dev`（无协议）会被浏览器当相对路径，用户点击 404
   // R36：空字符串校验——`url: ""` 与 url 不存在语义不同，贡献者显式写空字符串是误写
+  // R48：协议白名单校验（CRITICAL，安全审计 connection gap）
+  // `new URL("javascript:alert(1)")` 不抛错（合法 URL），通过原校验后渲染层生成
+  // `<a href="javascript:alert(document.cookie)">官网 ↗</a>`，用户点击触发 XSS。
+  // 攻击向量：贡献者提交 PR `url: javascript:...`，validator 通过 → CI build 通过 →
+  // ProjectCard / 详情页渲染可点击的 javascript: 链接 → 用户点击执行任意 JS。
+  // 防御：白名单只允许 http/https，与渲染层 <a href> 安全契约对齐。
+  // 同型对齐：repo 字段无此风险（前缀固定为 https://github.com/），
+  //          category.id / project.slug 经 urlFriendlyRe 校验（^[a-z0-9]+...$），无法注入协议。
   if (p.url === '') {
     fail(`${label}: url 为空字符串，要么不写该字段，要么写有效 URL（如 https://example.com）`);
   } else if (p.url !== undefined) {
@@ -370,7 +379,11 @@ for (const { file, data: p } of projects) {
       fail(`${label}: url 必须是字符串，当前类型为 ${typeof p.url}`);
     } else {
       try {
-        new URL(p.url);
+        const parsed = new URL(p.url);
+        // R48：协议白名单（防 javascript: / data: / vbscript: XSS 注入到 <a href>）
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+          fail(`${label}: url "${p.url}" 协议 "${parsed.protocol}" 不在白名单 {http, https} 内（防 XSS 注入，如 javascript: 协议点击触发任意 JS）`);
+        }
       } catch {
         fail(`${label}: url "${p.url}" 不是合法 URL（应带协议，如 https://example.com）`);
       }
