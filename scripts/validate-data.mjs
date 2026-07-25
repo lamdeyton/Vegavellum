@@ -14,10 +14,12 @@
 //   repo 跨项目唯一性：同一 GitHub 仓库不允许被重复收录（大小写不敏感，因 GitHub owner/repo 解析不区分大小写）
 //   license 格式：SPDX canonical 形式（已知许可证大小写错误 fail；未知许可证 warn）
 //   slug/category id 格式：URL-friendly（^[a-z0-9]+(-[a-z0-9]+)*$）
+//   slug 空白+前后空格：`"   "` / `" astro "` 报错（R55，R37/R53 同型补全，与 Category.id 对齐，防误导性"不是 URL-friendly"错误）
 //   tags 类型：必须是数组，元素必须是字符串（Project interface 契约 tags?: string[]）
 //   tags 元素：非空字符串 + 唯一（防 `["cli", ""]` 空标签和 `["cli", "cli"]` 重复标签）
 //   sources 元素：非空字符串 + 唯一 + 类型校验（同 tags 同型对齐，防误导性"不在枚举内"错误掩盖类型错误）
 //   tags/sources 元素空白字符串：`["   "]` 报错（同 R37 字段级 trim() 空白校验同型对齐，防渲染 `#   ` 空白标签 + 防误导性"不在枚举内"）
+//   tags/sources 元素前后空格：`[" astro "]` / `[" curator-curated "]` 报错（R54，R39/R53 同型补全，防渲染含空格标签 + 防误导性"不在枚举内"）
 //   url 格式：必须是合法 URL（带协议，如 https://example.com）
 //   url 协议白名单：只允许 http/https（R48，防 `javascript:` / `data:` / `vbscript:` XSS 注入到 <a href>）
 //   url 空白校验：trim() 空字符串与前后空格校验（R52，R37 同型补全，防 `<a href=" https://... ">` 含空格渲染）
@@ -29,6 +31,7 @@
 //   Project 顶层防御：null/非对象 YAML（空文件/数组/标量）报错并跳过，避免后续 TypeError 崩溃
 //   Category 条目防御：null/非对象元素（`- null` / `- "string"`）报错并跳过，同 Project 同型对齐
 //   free-text 空白字符串：name/description（Project）/ id/name/name_en/icon/description（Category）不得为仅含空格的字符串
+//   free-text 前后空格：name/description/license/language（Project）+ id/name/name_en/icon/description（Category）不得含前导/尾部空格（R53，R37/R52 同型补全）
 //   license/language 空白字符串：可选字段不得为仅含空格的字符串（与空字符串校验同型对齐）
 //   repo 前后空格：`repo: " owner/repo "` 报错，避免 GitHub URL 含空格 404
 //   repo 中间空格：`repo: "owner/re po"` 报错（R37 前后空格校验的同型补全，GitHub owner/repo 不允许任何空格）
@@ -160,6 +163,16 @@ for (const c of categories) {
       fail(`分类 ${c.id}: ${f} 为空白字符串（仅含空格/制表符/换行），请填写有效内容`);
     }
   }
+  // R53：前后空格校验（R37 同型补全，Horizontal gap 修复）
+  // R37 只加了 trim() === '' 纯空白校验，但遗漏了前后空格校验。
+  // `name: " 前端框架 "` 通过 R37 校验（trim() 后非空），但渲染时分类名前后有空格，不美观。
+  // 同型对齐 R37 repo + R52 url + Project free-text：所有 free-text 字段都应有前后空格校验。
+  // 防御性 typeof：R29 类型校验已 fail 数组误写，此处跳过避免冗余错误
+  for (const f of catStringFields) {
+    if (typeof c[f] === 'string' && c[f] && c[f] !== c[f].trim()) {
+      fail(`分类 ${c.id}: ${f} "${c[f]}" 含前导/尾部空格，应为 "${c[f].trim()}"`);
+    }
+  }
   // 未知字段校验（R33：Category interface 是封闭契约，拒绝 typo 字段）
   // 如贡献者写 `desription:` 而非 `description:`，description 会缺失但 desription 静默忽略
   // 防御性 typeof：YAML 解析为非对象时 Object.keys 报错，需先排除
@@ -171,7 +184,8 @@ for (const c of categories) {
     }
   }
   // category id 用于 URL（/category/<id>），必须 URL-friendly
-  if (c.id && !urlFriendlyRe.test(c.id)) {
+  // 防御性 trim：R53 前后空格校验已报告空格问题，此处跳过避免冗余错误（R31 模式：格式校验假设干净字符串）
+  if (c.id && typeof c.id === 'string' && c.id === c.id.trim() && !urlFriendlyRe.test(c.id)) {
     fail(`分类 id "${c.id}" 不是 URL-friendly 格式（仅小写字母/数字/连字符，无首尾/连续连字符）`);
   }
 }
@@ -273,6 +287,16 @@ for (const { file, data: p } of projects) {
       fail(`${label}: ${f} 为空白字符串（仅含空格/制表符/换行），请填写有效内容`);
     }
   }
+  // R53：前后空格校验（free-text 必填字段，R37 同型补全，Horizontal gap 修复）
+  // R37 只加了 trim() === '' 纯空白校验，但遗漏了前后空格校验。
+  // `name: " Astro "` 通过 R37 校验（trim() 后非空），但渲染时标题前后有空格，不美观。
+  // 同型对齐 R37 repo 前后空格校验 + R52 url 前后空格校验：所有 free-text 字段都应有前后空格校验。
+  // 防御性 typeof：R31 类型校验已 fail 数组误写，此处跳过避免冗余错误
+  for (const f of freeTextRequiredFields) {
+    if (typeof p[f] === 'string' && p[f] && p[f] !== p[f].trim()) {
+      fail(`${label}: ${f} "${p[f]}" 含前导/尾部空格，应为 "${p[f].trim()}"`);
+    }
+  }
 
   // addedAt 日期格式 YYYY-MM-DD（CONTRIBUTING 声明的契约）
   // 防御性 typeof 检查：R31 类型校验已 fail 数组误写，此处跳过避免冗余错误
@@ -288,15 +312,32 @@ for (const { file, data: p } of projects) {
     fail(`${label}: addedAt "${p.addedAt}" 不是有效日期（如 2 月无 30/31 日、月份不在 1-12 范围内）`);
   }
 
+  // R55：slug 空白字符串校验（R37 同型遗漏，与 Category.id 对齐）
+  // `slug: "   "` 通过必填校验（truthy）和类型校验，但语义为空
+  // 文件名一致性校验和 URL-friendly 校验会报误导性错误（"不一致"/"不是 URL-friendly"）
+  // R31 模式：空性错误优先于格式/内容校验
+  // 防御性 typeof：R31 类型校验已 fail 数组误写，此处跳过避免冗余错误
+  if (typeof p.slug === 'string' && p.slug && p.slug.trim() === '') {
+    fail(`${label}: slug 为空白字符串（仅含空格/制表符/换行），请填写有效 slug`);
+  }
+  // R55：slug 前后空格校验（R53 同型遗漏，与 Category.id 对齐）
+  // `slug: " astro "` 通过类型校验，但 URL-friendly 校验报"不是 URL-friendly 格式"（误导性错误）
+  // 真实问题是前后空格，而非"格式错误"（R31 模式：格式错误前先报空格错误）
+  // 防御性 typeof：R31 类型校验已 fail 数组误写，此处跳过避免冗余错误
+  if (typeof p.slug === 'string' && p.slug && p.slug !== p.slug.trim()) {
+    fail(`${label}: slug "${p.slug}" 含前导/尾部空格，应为 "${p.slug.trim()}"`);
+  }
   // B4 slug vs 文件名
   // 防御性 typeof：数组 !== 字符串会误触发"不一致"错误
-  if (typeof p.slug === 'string' && p.slug && p.slug !== fileBase) {
+  // 防御性 trim：R55 前后空格校验已报告空格问题，此处跳过避免误导性"不一致"错误（R31 模式）
+  if (typeof p.slug === 'string' && p.slug && p.slug === p.slug.trim() && p.slug !== fileBase) {
     fail(`${label}: slug "${p.slug}" 与文件名 "${fileBase}" 不一致（B4 契约：文件名即 slug）`);
   }
 
   // slug URL-friendly 格式（用于 /project/<slug> 路由）
   // 防御性 typeof：正则 .test() 会 String() 转换数组，可能误判
-  if (typeof p.slug === 'string' && p.slug && !urlFriendlyRe.test(p.slug)) {
+  // 防御性 trim：R55 前后空格校验已报告空格问题，此处跳过避免误导性"不是 URL-friendly"错误（R31 模式）
+  if (typeof p.slug === 'string' && p.slug && p.slug === p.slug.trim() && !urlFriendlyRe.test(p.slug)) {
     fail(`${label}: slug "${p.slug}" 不是 URL-friendly 格式（仅小写字母/数字/连字符，无首尾/连续连字符）`);
   }
 
@@ -426,6 +467,13 @@ for (const { file, data: p } of projects) {
       fail(`${label}: license 必须是字符串，当前类型为 ${typeof p.license}`);
     } else if (p.license.trim() === '') {
       fail(`${label}: license 为空白字符串（仅含空格/制表符/换行），要么不写该字段，要么写有效 SPDX 标识符（如 MIT）`);
+    } else if (p.license !== p.license.trim()) {
+      // R53：前后空格校验（R37/R52 同型补全，Horizontal gap 修复）
+      // R37 只加了 trim() === '' 纯空白校验，但遗漏了前后空格校验。
+      // `license: " MIT "` 通过 R37 校验（trim() 后非空），但 SPDX 校验报"不在常见列表中"（误导性错误）。
+      // 同型对齐 R37 repo + R52 url：所有 free-text 字段都应有前后空格校验。
+      // R31 模式：空性/格式错误优先于内容校验——前后空格比 SPDX 校验更基础，先报告。
+      fail(`${label}: license "${p.license}" 含前导/尾部空格，应为 "${p.license.trim()}"`);
     }
   }
 
@@ -439,6 +487,12 @@ for (const { file, data: p } of projects) {
       fail(`${label}: language 必须是字符串，当前类型为 ${typeof p.language}`);
     } else if (p.language.trim() === '') {
       fail(`${label}: language 为空白字符串（仅含空格/制表符/换行），要么不写该字段，要么写有效语言名（如 Rust）`);
+    } else if (p.language !== p.language.trim()) {
+      // R53：前后空格校验（R37/R52 同型补全，Horizontal gap 修复）
+      // R37 只加了 trim() === '' 纯空白校验，但遗漏了前后空格校验。
+      // `language: " Rust "` 通过 R37 校验（trim() 后非空），但渲染时 badge 前后有空格，不美观。
+      // 同型对齐 R37 repo + R52 url + license：所有 free-text 字段都应有前后空格校验。
+      fail(`${label}: language "${p.language}" 含前导/尾部空格，应为 "${p.language.trim()}"`);
     }
   }
 
@@ -472,6 +526,15 @@ for (const { file, data: p } of projects) {
         if (s.trim() === '') {
           fail(`${label}: sources 元素 "${s}" 为空白字符串（仅含空格/制表符/换行），请填写有效来源`);
           continue; // 跳过枚举校验，避免误导性"不在枚举内"
+        }
+        // R54：前后空格校验（R39/R53 同型补全，Horizontal gap 修复）
+        // R39 只加了 trim() === '' 纯空白校验，但遗漏了前后空格校验。
+        // `sources: [" curator-curated "]` 通过 R39 校验（trim() 后非空），但枚举校验报"不在枚举内"（误导性错误）。
+        // 同型对齐 R53 字段级前后空格校验：所有 free-text 元素都应有前后空格校验。
+        // R31 模式：空性/格式错误优先于内容校验——前后空格比枚举/唯一性更基础，先报告。
+        if (s !== s.trim()) {
+          fail(`${label}: sources 元素 "${s}" 含前导/尾部空格，应为 "${s.trim()}"`);
+          continue; // 跳过唯一性+枚举校验，避免误导性"不在枚举内"（R31 模式）
         }
         // 元素唯一性校验（R35）
         if (seenSources.has(s)) {
@@ -519,6 +582,14 @@ for (const { file, data: p } of projects) {
           fail(`${label}: tags 元素 "${t}" 为空白字符串（仅含空格/制表符/换行），请填写有效标签`);
           continue; // 跳过唯一性校验，避免空白字符串被加入 Set
         }
+        // R54：前后空格校验（R39/R53 同型补全，Horizontal gap 修复）
+        // R39 只加了 trim() === '' 纯空白校验，但遗漏了前后空格校验。
+        // `tags: [" astro "]` 通过 R39 校验（trim() 后非空），但渲染为 `# astro `（含空格），不美观。
+        // 同型对齐 R53 字段级前后空格校验：所有 free-text 元素都应有前后空格校验。
+        if (t !== t.trim()) {
+          fail(`${label}: tags 元素 "${t}" 含前导/尾部空格，应为 "${t.trim()}"`);
+          continue; // 跳过唯一性校验，避免含空格元素被加入 Set（R31 模式：格式错误优先于内容校验）
+        }
         // 元素唯一性校验（R35）
         if (seenTags.has(t)) {
           fail(`${label}: tags 元素 "${t}" 重复`);
@@ -535,7 +606,7 @@ for (const { file, data: p } of projects) {
   // 而 canonical(string) !== p.license(数组) 恒为 true，输出矛盾错误：
   // `license "MIT" 不是 canonical SPDX 形式，应为 "MIT"`（同一字符串两边都有 MIT）
   // R31 模式：后续校验假设字符串时，必须在前面加 typeof 防御，避免类型错误字段导致误导性错误
-  if (typeof p.license === 'string' && p.license !== '') {
+  if (typeof p.license === 'string' && p.license !== '' && p.license === p.license.trim()) {
     const canonical = spdxLowercaseMap.get(p.license.toLowerCase());
     if (canonical && canonical !== p.license) {
       fail(`${label}: license "${p.license}" 不是 canonical SPDX 形式，应为 "${canonical}"`);

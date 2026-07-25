@@ -64,10 +64,12 @@ npm install
 
 # 数据校验（检查必填字段、Project/Category 全字段类型、status/sources 枚举、
 # repo 格式与跨项目唯一性、addedAt 日期格式与有效性、slug 文件名一致性与 URL-friendly
-# 格式与唯一性、category 引用、category id 唯一性与 URL-friendly 格式、license SPDX
+# 格式与唯一性（含空白+前后空格校验，与 Category.id 同型对齐）、category 引用、category id 唯一性与 URL-friendly 格式、license SPDX
 # canonical、url 格式与协议白名单（防 javascript: 等 XSS 注入）与冗余、tags/sources
-# 数组元素类型/非空/唯一性/空白字符串、可选字段空值、未知字段拒绝防 typo、空文件与
-# 非对象 YAML 防御性检查、free-text 空白字符串、repo 前后与中间空格、repo 空段校验（防
+# 数组元素类型/非空/唯一性/空白字符串/前后空格、可选字段空值、未知字段拒绝防 typo、空文件与
+# 非对象 YAML 防御性检查、free-text 空白字符串、free-text 前后空格校验（name/description/
+# license/language + Category 5 字段 = 9 个字段统一前后空格校验，SPDX/URL-friendly
+# 等后续格式校验在输入有空格时跳过避免误导性错误）、repo 前后与中间空格、repo 空段校验（防
 # owner/repo 为空生成无效 URL）、url 空白校验（trim() 空字符串与前后空格校验，防
 # `<a href=" https://... ">` 含空格渲染）、categories.yaml 顶层 null/非数组校验等）
 npm run validate
