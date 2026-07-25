@@ -43,6 +43,48 @@ export function getSourceLabel(s: string): string {
   return SOURCE_LABELS[s] ?? s;
 }
 
+/**
+ * R49：url 协议白名单渲染层防御（R48 同型遗漏，dev 模式下 validator 不跑）。
+ *
+ * R48 在 validator 中加了 url 协议白名单（只允许 http/https），但 validator 只在 CI 中运行，
+ * dev 模式（npm run dev）不跑 validator。攻击向量：贡献者 PR 含 `url: "javascript:alert(1)"`，
+ * 开发者拉取 PR 本地测试 → dev 模式通过 data.ts（无字段校验）→ ProjectCard/[slug].astro
+ * 渲染 `<a href="javascript:alert(1)">` → 点击触发 XSS。
+ *
+ * 与 R44-R46 渲染层防御模式同型对齐：validator（CI 守门员）+ data.ts（渲染层守门员）。
+ * 不静默 fallback：非法协议 console.error 报告 + 返回 undefined（让渲染层 `project.url &&` 跳过）。
+ *
+ * @param url 原始 url 字段值（可能为任意类型：undefined/string/number/array/object）
+ * @param slug 项目 slug，用于错误信息定位（可能为 undefined，回退到 '(unknown)'）
+ * @returns 通过协议白名单的 url 字符串，或 undefined（非法时）
+ */
+function sanitizeProjectUrl(url: unknown, slug: string | undefined): string | undefined {
+  // 字段不存在或 null 视为未提供，渲染层 `project.url &&` 自然跳过
+  if (url === undefined || url === null) return undefined;
+  // 类型校验：非字符串的 url（数组/对象/数字）无法用于 href，直接忽略
+  if (typeof url !== 'string') {
+    console.error(`[Vegavellum] 项目 ${slug || '(unknown)'}: url 字段类型错误（${typeof url}），已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
+    return undefined;
+  }
+  // 空字符串：与字段省略语义不同（贡献者显式写空字符串是误写），validator 会 fail，渲染层忽略
+  if (url === '') {
+    console.error(`[Vegavellum] 项目 ${slug}: url 为空字符串，已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
+    return undefined;
+  }
+  try {
+    const parsed = new URL(url);
+    // R48 同型对齐：协议白名单只允许 http/https，防 javascript:/data:/vbscript: XSS 注入
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      console.error(`[Vegavellum] 项目 ${slug}: url "${url}" 协议 "${parsed.protocol}" 不在白名单 {http, https} 内（防 XSS 注入），已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
+      return undefined;
+    }
+    return url;
+  } catch {
+    console.error(`[Vegavellum] 项目 ${slug}: url "${url}" 不是合法 URL，已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
+    return undefined;
+  }
+}
+
 /** 读取并解析全部分类定义。 */
 export function getAllCategories(): Category[] {
   const raw = readFileSync(join(dataDir, 'categories.yaml'), 'utf8');
@@ -96,7 +138,13 @@ export function getAllProjects(): Project[] {
   const validProjects = projects.filter(
     (p): p is Project => p !== null && p !== undefined && typeof p === 'object' && !Array.isArray(p)
   );
-  return validProjects.filter((p) => p.status === 'published');
+  return validProjects
+    .filter((p) => p.status === 'published')
+    // R49：url 协议白名单渲染层防御（R48 同型遗漏补全，dev 模式下 validator 不跑）
+    // 非法协议 url（如 javascript:alert(1)）会被 sanitizeProjectUrl 过滤为 undefined，
+    // 渲染层 `project.url &&` 自然跳过，避免生成可点击的 XSS 链接。
+    // 不静默 fallback：console.error 报告非法 url，指引运行 validator 修复源数据。
+    .map((p) => ({ ...p, url: sanitizeProjectUrl(p.url, p.slug) }));
 }
 
 /** 按分类 id 获取已发布项目。 */
