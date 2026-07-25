@@ -54,9 +54,16 @@ export function getSourceLabel(s: string): string {
  * 与 R44-R46 渲染层防御模式同型对齐：validator（CI 守门员）+ data.ts（渲染层守门员）。
  * 不静默 fallback：非法协议 console.error 报告 + 返回 undefined（让渲染层 `project.url &&` 跳过）。
  *
+ * R52：trim() 空白防御（R37 同型补全，渲染层防御）
+ * `url: " https://example.com "` 通过 URL 构造函数（内部 trim），但渲染层生成
+ * `<a href=" https://example.com ">`（含空格）。R49 原实现返回原始 url（含空格），
+ * R52 改为返回 trim 后的 url，与 R37 字段级 trim 校验同型对齐。
+ * 同时增加 trim() === '' 检查，拦截 `url: "   "` 等纯空白字符串（原实现依赖 URL 格式校验
+ * 报误导性"不是合法 URL"，R31 模式：空性错误优先于格式校验）。
+ *
  * @param url 原始 url 字段值（可能为任意类型：undefined/string/number/array/object）
  * @param slug 项目 slug，用于错误信息定位（可能为 undefined，回退到 '(unknown)'）
- * @returns 通过协议白名单的 url 字符串，或 undefined（非法时）
+ * @returns 通过协议白名单的 url 字符串（已 trim），或 undefined（非法时）
  */
 function sanitizeProjectUrl(url: unknown, slug: string | undefined): string | undefined {
   // 字段不存在或 null 视为未提供，渲染层 `project.url &&` 自然跳过
@@ -66,21 +73,28 @@ function sanitizeProjectUrl(url: unknown, slug: string | undefined): string | un
     console.error(`[Vegavellum] 项目 ${slug || '(unknown)'}: url 字段类型错误（${typeof url}），已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
     return undefined;
   }
-  // 空字符串：与字段省略语义不同（贡献者显式写空字符串是误写），validator 会 fail，渲染层忽略
-  if (url === '') {
-    console.error(`[Vegavellum] 项目 ${slug}: url 为空字符串，已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
+  // R52：先 trim 再校验，与 R37 字段级 trim 校验同型对齐
+  // 原始 url 含前导/尾部空格时，URL 构造函数内部 trim 可通过格式校验，但渲染层生成
+  // `<a href=" https://... ">`（含空格）。trim 后返回确保渲染层 href 无空格。
+  const trimmed = url.trim();
+  // 空字符串 / 纯空白字符串：与字段省略语义不同（贡献者显式写空字符串是误写），
+  // validator 会 fail，渲染层忽略。R52：原实现只检查 `url === ''`，遗漏 `url: "   "`，
+  // 改为检查 `trimmed === ''` 同时覆盖空字符串和纯空白字符串。
+  if (trimmed === '') {
+    console.error(`[Vegavellum] 项目 ${slug}: url 为空字符串或纯空白字符串，已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
     return undefined;
   }
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(trimmed);
     // R48 同型对齐：协议白名单只允许 http/https，防 javascript:/data:/vbscript: XSS 注入
     if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      console.error(`[Vegavellum] 项目 ${slug}: url "${url}" 协议 "${parsed.protocol}" 不在白名单 {http, https} 内（防 XSS 注入），已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
+      console.error(`[Vegavellum] 项目 ${slug}: url "${trimmed}" 协议 "${parsed.protocol}" 不在白名单 {http, https} 内（防 XSS 注入），已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
       return undefined;
     }
-    return url;
+    // R52：返回 trim 后的 url（而非原始 url），确保渲染层 href 无前导/尾部空格
+    return trimmed;
   } catch {
-    console.error(`[Vegavellum] 项目 ${slug}: url "${url}" 不是合法 URL，已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
+    console.error(`[Vegavellum] 项目 ${slug}: url "${trimmed}" 不是合法 URL，已忽略该字段。请运行 \`npm run validate\` 检查数据格式。`);
     return undefined;
   }
 }

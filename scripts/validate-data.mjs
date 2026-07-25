@@ -20,6 +20,7 @@
 //   tags/sources 元素空白字符串：`["   "]` 报错（同 R37 字段级 trim() 空白校验同型对齐，防渲染 `#   ` 空白标签 + 防误导性"不在枚举内"）
 //   url 格式：必须是合法 URL（带协议，如 https://example.com）
 //   url 协议白名单：只允许 http/https（R48，防 `javascript:` / `data:` / `vbscript:` XSS 注入到 <a href>）
+//   url 空白校验：trim() 空字符串与前后空格校验（R52，R37 同型补全，防 `<a href=" https://... ">` 含空格渲染）
 //   url/license/language 类型：必须是字符串（Project interface 契约）
 //   可选字段空值：url/license/language 不得为空字符串，tags/sources 不得为空数组（要么不写字段，要么写有效值）
 //   Project 必填字段类型：name/slug/repo/description/category/addedAt/status 必须是字符串
@@ -381,11 +382,27 @@ for (const { file, data: p } of projects) {
   // 防御：白名单只允许 http/https，与渲染层 <a href> 安全契约对齐。
   // 同型对齐：repo 字段无此风险（前缀固定为 https://github.com/），
   //          category.id / project.slug 经 urlFriendlyRe 校验（^[a-z0-9]+...$），无法注入协议。
+  // R52：trim() 空白校验（R37 同型补全，Horizontal gap 修复）
+  // `new URL(" https://example.com ")` 内部 trim 空白后解析成功，原校验静默通过，
+  // 但渲染层生成 `<a href=" https://example.com ">`（含空格），与 R37 模式不一致。
+  // 同型对齐 R37（name/description/license/language/repo 前后空格校验）：
+  //   - trim() === '' 校验在 URL 格式校验之前，避免误导性"不是合法 URL"错误（R31 模式）
+  //   - url !== url.trim() 校验拦截前后空格，与 R37 license/language 同型
   if (p.url === '') {
     fail(`${label}: url 为空字符串，要么不写该字段，要么写有效 URL（如 https://example.com）`);
   } else if (p.url !== undefined) {
     if (typeof p.url !== 'string') {
       fail(`${label}: url 必须是字符串，当前类型为 ${typeof p.url}`);
+    } else if (p.url.trim() === '') {
+      // R52：空白字符串校验（同 R37 license/language 同型对齐）
+      // `url: "   "` 通过空字符串校验（"   " !== ''），但 URL 格式校验报误导性"不是合法 URL"
+      // 真实问题是"空白字符串"而非"格式错误"（R31 模式：空性错误优先于格式校验）
+      fail(`${label}: url 为空白字符串（仅含空格/制表符/换行），要么不写该字段，要么写有效 URL（如 https://example.com）`);
+    } else if (p.url !== p.url.trim()) {
+      // R52：前后空格校验（同 R37 license/language/repo 同型对齐）
+      // `url: " https://example.com "` 通过 URL 格式校验（URL 构造函数内部 trim），
+      // 但渲染层生成 `<a href=" https://example.com ">`（含空格），与 R37 模式不一致
+      fail(`${label}: url "${p.url}" 含前导/尾部空格，应为 "${p.url.trim()}"`);
     } else {
       try {
         const parsed = new URL(p.url);
